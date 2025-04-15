@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best Friend Quiz</title>
+  <style>
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to right, #89f7fe, #66a6ff);
+      padding: 40px;
+      margin: 0;
+      color: #333;
+      overflow: hidden;
+    }
+    .quiz-container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    .question-box {
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.7s ease-in-out;
+      position: absolute;
+      width: 100%;
+    }
+    .question-box.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      position: relative;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #4b6cb7;
+      text-align: center;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 12px;
+      background: #f0f0f0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      border: 1px solid #ddd;
+    }
+    .options label:hover {
+      background: #e0eaff;
+      transform: scale(1.05);
+    }
+    button {
+      padding: 12px 25px;
+      background-color: #4b6cb7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #3a57a5;
+    }
+    .result-box {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.7s ease-in-out;
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    .result-box.show {
+      display: block;
+      opacity: 1;
+    }
+    #results strong {
+      color: #4b6cb7;
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: #ccc;
+      margin: 15px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <!-- Question Pages -->
+    <div id="quiz"></div>
+
+    <!-- Result Page -->
+    <div class="result-box" id="result-box">
+      <h2>Your Answers</h2>
+      <div id="results"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "What is your best friend’s favorite food?",
+      "Which color does your best friend like the most?",
+      "What is your best friend's dream job?",
+      "Where would your best friend love to travel?",
+      "What is your best friend's biggest fear?",
+      "Who is your best friend's favorite celebrity?",
+      "What is your best friend's favorite hobby?",
+      "What annoys your best friend the most?",
+      "What is your best friend’s favorite movie?",
+      "When is your best friend’s birthday?"
+    ];
+
+    const options = [
+      ["Pizza", "Biryani", "Burger", "Sushi"],
+      ["Red", "Blue", "Green", "Black"],
+      ["Doctor", "Actor", "Artist", "Engineer"],
+      ["Paris", "Tokyo", "New York", "London"],
+      ["Heights", "Spiders", "Darkness", "Alone"],
+      ["Shahrukh Khan", "Tom Holland", "Selena Gomez", "BTS"],
+      ["Drawing", "Gaming", "Reading", "Dancing"],
+      ["Loud noises", "Liars", "Slow internet", "Waiting"],
+      ["Titanic", "Avengers", "3 Idiots", "Joker"],
+      ["1 Jan", "14 Feb", "25 Dec", "31 Oct"]
+    ];
+
+    const quizDiv = document.getElementById("quiz");
+    const resultBox = document.getElementById("result-box");
+    const resultsDiv = document.getElementById("results");
+    let answers = [];
+
+    function createQuestion(index) {
+      const container = document.createElement("div");
+      container.className = "question-box";
+      if(index === 0) container.classList.add("active");
+
+      const q = document.createElement("h2");
+      q.textContent = `Q${index + 1}: ${questions[index]}`;
+
+      const optDiv = document.createElement("div");
+      optDiv.className = "options";
+      options[index].forEach((opt) => {
+        const label = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = `question${index}`;
+        radio.value = opt;
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(opt));
+        optDiv.appendChild(label);
+      });
+
+      const nextBtn = document.createElement("button");
+      nextBtn.textContent = index < questions.length - 1 ? "Next" : "Finish";
+      nextBtn.onclick = () => {
+        const selectedOption = container.querySelector(`input[name='question${index}']:checked`);
+        if (!selectedOption) {
+          alert("Please select an option.");
+          return;
+        }
+        answers.push({
+          question: questions[index],
+          selected: selectedOption.value
+        });
+
+        container.classList.remove("active");
+        if (index < questions.length - 1) {
+          const nextBox = quizDiv.children[index + 1];
+          setTimeout(() => {
+            nextBox.classList.add("active");
+          }, 200);
+        } else {
+          setTimeout(showResults, 400);
+        }
+      };
+
+      container.appendChild(q);
+      container.appendChild(optDiv);
+      container.appendChild(nextBtn);
+      quizDiv.appendChild(container);
+    }
+
+    function showResults() {
+      quizDiv.style.display = "none";
+      resultBox.classList.add("show");
+      answers.forEach((ans, idx) => {
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>Q${idx + 1}:</strong> ${ans.question}<br>
+                         <strong>Selected:</strong> ${ans.selected}<hr>`;
+        resultsDiv.appendChild(div);
+      });
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      createQuestion(i);
+    }
+  </script>
+</body>
+</html>
