@@ -13,6 +13,24 @@
       color: #333;
       overflow: hidden;
     }
+    .balloon {
+      width: 40px;
+      height: 60px;
+      background-color: pink;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: absolute;
+      bottom: -70px;
+      animation: floatBalloon 20s linear infinite;
+      opacity: 0.7;
+    }
+    @keyframes floatBalloon {
+      0% {
+        transform: translateY(0) rotate(0deg);
+      }
+      100% {
+        transform: translateY(-110vh) rotate(360deg);
+      }
+    }
     .quiz-container {
       max-width: 700px;
       margin: auto;
@@ -95,6 +113,18 @@
   </style>
 </head>
 <body>
+  <!-- Animated Balloons -->
+  <script>
+    for(let i=0; i<15; i++){
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.animationDuration = (10 + Math.random() * 20) + 's';
+      balloon.style.backgroundColor = `hsl(${Math.random()*360}, 70%, 80%)`;
+      document.body.appendChild(balloon);
+    }
+  </script>
+
   <div class="quiz-container">
     <!-- Question Pages -->
     <div id="quiz"></div>
@@ -108,29 +138,34 @@
 
   <script>
     const questions = [
-      "What is your best friend’s favorite food?",
-      "Which color does your best friend like the most?",
-      "What is your best friend's dream job?",
-      "Where would your best friend love to travel?",
-      "What is your best friend's biggest fear?",
-      "Who is your best friend's favorite celebrity?",
+      "Who is my Spcial Person?",
+      "Whats is my personality?",
+      "What is my hobby?",
+      "Whats place i like most?",
+      "What is my biggest fear?",
+      "Who is my favorite celebrity?",
       "What is your best friend's favorite hobby?",
-      "What annoys your best friend the most?",
-      "What is your best friend’s favorite movie?",
-      "When is your best friend’s birthday?"
+      "What i hate the most in you?",
+      "What is my favorite movie?",
+      "When is my birthday?"
     ];
 
     const options = [
-      ["Pizza", "Biryani", "Burger", "Sushi"],
-      ["Red", "Blue", "Green", "Black"],
-      ["Doctor", "Actor", "Artist", "Engineer"],
-      ["Paris", "Tokyo", "New York", "London"],
+      ["Friend", "Family", "Meesum", "NO One"],
+      ["sad", "happy", "Very Friendly", "Alone"],
+      ["Doctor", "Actor", "designer", "Engineer"],
+      ["dubai", "alone place", "tokyo", "London"],
       ["Heights", "Spiders", "Darkness", "Alone"],
-      ["Shahrukh Khan", "Tom Holland", "Selena Gomez", "BTS"],
-      ["Drawing", "Gaming", "Reading", "Dancing"],
-      ["Loud noises", "Liars", "Slow internet", "Waiting"],
-      ["Titanic", "Avengers", "3 Idiots", "Joker"],
-      ["1 Jan", "14 Feb", "25 Dec", "31 Oct"]
+      ["Ghalib", "salman khan", "Salar shah", "BTS"],
+      ["Poet writing", "Gaming", "Reading", "Dancing"],
+      ["Loud noises", "Bewafai", "writing", "ignoring"],
+      ["Wrong number", "Jawani phir nhi ani", "Ruhposh", "pathan"],
+      ["9 sep", "9 Feb", "9 Dec", "9 Oct"]
+    ];
+
+    const correctAnswers = [
+      "Meesum", "  Very Friendly", "Designer", "Alone place", "Alone",
+      "Salar shah", "Poet Writing", "Bewafai", "Ruhposh", "9 sep"
     ];
 
     const quizDiv = document.getElementById("quiz");
@@ -169,7 +204,8 @@
         }
         answers.push({
           question: questions[index],
-          selected: selectedOption.value
+          selected: selectedOption.value,
+          correct: correctAnswers[index]
         });
 
         container.classList.remove("active");
@@ -194,8 +230,12 @@
       resultBox.classList.add("show");
       answers.forEach((ans, idx) => {
         const div = document.createElement("div");
+        const isCorrect = ans.selected === ans.correct;
         div.innerHTML = `<strong>Q${idx + 1}:</strong> ${ans.question}<br>
-                         <strong>Selected:</strong> ${ans.selected}<hr>`;
+                         <strong>Selected:</strong> ${ans.selected} <br>
+                         <strong>Correct:</strong> ${ans.correct} <br>
+                         <strong style="color:${isCorrect ? 'green' : 'red'}">${isCorrect ? 'Correct ✅' : 'Wrong ❌'}</strong>
+                         <hr>`;
         resultsDiv.appendChild(div);
       });
     }
