@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Best Friend Quiz</title>
+  <style>
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+
+    body {
+      font-family: 'Comic Sans MS', cursive, sans-serif;
+      background: linear-gradient(to right, #a1c4fd, #c2e9fb);
+      padding: 40px;
+      margin: 0;
+      color: #333;
+      overflow-x: hidden;
+    }
+
+    .animated-title {
+      font-size: 32px;
+      color: #fff;
+      background: #4b6cb7;
+      padding: 20px;
+      text-align: center;
+      border-radius: 15px;
+      animation: bounce 2s infinite;
+      margin-bottom: 20px;
+    }
+
+    .balloon {
+      width: 40px;
+      height: 60px;
+      background-color: pink;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      position: absolute;
+      bottom: -70px;
+      animation: floatBalloon 20s linear infinite;
+      opacity: 0.7;
+    }
+    .friend-heart {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: red;
+      clip-path: polygon(50% 0%, 61% 12%, 75% 25%, 87% 40%, 94% 56%, 98% 75%, 100% 100%, 0% 100%, 2% 75%, 6% 56%, 13% 40%, 25% 25%, 39% 12%);
+      animation: floatFriend 12s linear infinite;
+      opacity: 0.5;
+    }
+    @keyframes floatBalloon {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(-110vh) rotate(360deg); }
+    }
+    @keyframes floatFriend {
+      0% { transform: translateY(0) translateX(0); }
+      100% { transform: translateY(-100vh) translateX(50vw); }
+    }
+    .quiz-container {
+      max-width: 700px;
+      margin: auto;
+      background: #fff;
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+    }
+    .question-box {
+      display: none;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: all 0.7s ease-in-out;
+      position: absolute;
+      width: 100%;
+    }
+    .question-box.active {
+      display: block;
+      opacity: 1;
+      transform: translateY(0);
+      position: relative;
+    }
+    .question-box input[type="text"] {
+      padding: 10px;
+      width: 100%;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+    h2 {
+      margin-bottom: 20px;
+      color: #4b6cb7;
+      text-align: center;
+    }
+    .options label {
+      display: block;
+      margin-bottom: 12px;
+      background: #f0f0f0;
+      padding: 10px 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      border: 1px solid #ddd;
+    }
+    .options label:hover {
+      background: #e0eaff;
+      transform: scale(1.05);
+    }
+    button {
+      padding: 12px 25px;
+      background-color: #4b6cb7;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #3a57a5;
+    }
+    .result-box {
+      display: none;
+      opacity: 0;
+      transition: opacity 0.7s ease-in-out;
+      background: #fff;
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      max-height: 500px;
+      overflow-y: auto;
+    }
+    .result-box.show {
+      display: block;
+      opacity: 1;
+    }
+    #results strong {
+      color: #4b6cb7;
+    }
+    hr {
+      border: 0;
+      height: 1px;
+      background: #ccc;
+      margin: 15px 0;
+    }
+    .thankyou-message {
+      margin-top: 20px;
+      text-align: center;
+      font-size: 18px;
+      color: #2a2a2a;
+    }
+  </style>
+</head>
+<body>
+  <!-- Animated Balloons and Friendship Icons -->
+  <script>
+    for(let i=0; i<15; i++){
+      const balloon = document.createElement('div');
+      balloon.className = 'balloon';
+      balloon.style.left = Math.random() * 100 + 'vw';
+      balloon.style.animationDuration = (10 + Math.random() * 20) + 's';
+      balloon.style.backgroundColor = `hsl(${Math.random()*360}, 70%, 80%)`;
+      document.body.appendChild(balloon);
+    }
+    for(let i=0; i<10; i++){
+      const heart = document.createElement('div');
+      heart.className = 'friend-heart';
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.animationDuration = (12 + Math.random() * 10) + 's';
+      document.body.appendChild(heart);
+    }
+  </script>
+
+  <div class="animated-title">🎉 Welcome to My Best Friend Quiz Challenge 🎉</div>
+
+  <div class="quiz-container">
+    <!-- Home Welcome Page -->
+    <div class="question-box active" id="welcome-page">
+      <h2>💖 Welcome to the Most Fun Friendship Quiz! 💖</h2>
+      <p style="text-align:center">Prove how well you know me by answering these cool questions 😊</p>
+      <button onclick="goToNamePage()">Let's Go!</button>
+    </div>
+
+    <!-- Name Entry Page -->
+    <div class="question-box" id="name-page">
+      <h2>Are you ready to test how well you know me? 😄</h2>
+      <input type="text" id="username" placeholder="Enter your name..." />
+      <button onclick="startQuiz()">Start Quiz</button>
+    </div>
+
+    <!-- Question Pages -->
+    <div id="quiz"></div>
+
+    <!-- Result Page -->
+    <div class="result-box" id="result-box">
+      <h2 id="user-result-name"></h2>
+      <div id="results"></div>
+      <div class="thankyou-message" id="thankyou-message"></div>
+    </div>
+  </div>
+
+  <script>
+    const questions = [
+      "Who is my Spcial Person?",
+      "Whats is my personality?",
+      "What is my Aim of Life?",
+      "Whats place i like most?",
+      "What is my biggest habit?",
+      "Who is my favorite celebrity?",
+      "What is my favorite hobby?",
+      "What i hate the most?",
+      "What is my favorite movie?",
+      "When is my birthday?"
+    ];
+
+    const options = [
+      ["Friend", "Family", "Meesum", "NO One"],
+      ["sad", "happy", "Very Friendly", "Alone"],
+      ["Doctor", "Actor", "Designer", "Engineer"],
+      ["dubai", "Where My Bestie", "My studio", "London"],
+      ["Loyality", "Understand easyly", "Respect", "sleep"],
+      ["Ghalib", "salman khan", "Salar shah", "BTS"],
+      ["Poet writing", "Gaming", "Reading", "Dancing"],
+      ["Loud noises", "Bewafai", "writing", "ignoring"],
+      ["Wrong number", "Jawani phir nhi ani", "Ruhposh", "pathan"],
+      ["9 sep", "9 Feb", "9 Dec", "9 Oct"]
+    ];
+
+    const correctAnswers = [
+      "Meesum", "Very Friendly", "Designer", "Where My Bestie", "Loyality",
+      "Salar shah", "Poet writing", "Bewafai", "Ruhposh", "9 sep"
+    ];
+
+    let currentQuestion = 0;
+    let userAnswers = [];
+    let userName = "";
+
+    function goToNamePage() {
+      document.getElementById("welcome-page").classList.remove("active");
+      document.getElementById("name-page").classList.add("active");
+    }
+
+    function startQuiz() {
+      const input = document.getElementById("username");
+      if (!input.value.trim()) {
+        alert("Please enter your name.");
+        return;
+      }
+      userName = input.value.trim();
+      document.getElementById("name-page").classList.remove("active");
+      document.querySelectorAll(".question-box")[2].classList.add("active");
+    }
+
+    function createQuestion(index) {
+      const container = document.getElementById("quiz");
+      const div = document.createElement("div");
+      div.className = "question-box";
+      const q = document.createElement("h2");
+      q.textContent = questions[index];
+      div.appendChild(q);
+
+      const opts = document.createElement("div");
+      opts.className = "options";
+
+      options[index].forEach(opt => {
+        const label = document.createElement("label");
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "q" + index;
+        radio.value = opt;
+        label.appendChild(radio);
+        label.appendChild(document.createTextNode(" " + opt));
+        opts.appendChild(label);
+      });
+
+      div.appendChild(opts);
+      const btn = document.createElement("button");
+      btn.textContent = (index === questions.length - 1) ? "Finish" : "Next";
+      btn.onclick = () => nextQuestion(index);
+      div.appendChild(btn);
+
+      container.appendChild(div);
+    }
+
+    function nextQuestion(index) {
+      const selected = document.querySelector(`input[name="q${index}"]:checked`);
+      if (!selected) {
+        alert("Please select an answer.");
+        return;
+      }
+      userAnswers[index] = selected.value;
+      document.querySelectorAll(".question-box")[index + 2].classList.remove("active");
+      if (index + 1 < questions.length) {
+        document.querySelectorAll(".question-box")[index + 3].classList.add("active");
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const resultBox = document.getElementById("result-box");
+      const resultsDiv = document.getElementById("results");
+      const userResult = document.getElementById("user-result-name");
+      resultsDiv.innerHTML = "";
+      userResult.textContent = `${userName}'s Quiz Results 📝`;
+      for (let i = 0; i < questions.length; i++) {
+        const result = document.createElement("div");
+        result.innerHTML = `<strong>Q${i+1}:</strong> ${questions[i]}<br>👉 Your Answer: ${userAnswers[i]}<br>✅ Correct Answer: ${correctAnswers[i]}`;
+        resultsDiv.appendChild(result);
+        resultsDiv.appendChild(document.createElement("hr"));
+      }
+      document.getElementById("thankyou-message").textContent = `🎉 Thank you for playing, ${userName}! 🎉`;
+      resultBox.classList.add("show");
+    }
+
+    for (let i = 0; i < questions.length; i++) {
+      createQuestion(i);
+    }
+  </script>
+</body>
+</html>
